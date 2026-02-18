@@ -21,8 +21,19 @@ const SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.g
 app.use(cors());
 app.use(express.json());
 
+// Root route for status check
+app.get('/', (req, res) => {
+    res.send('<h1>YouTube Automation Backend is Online</h1><p>Visit <a href="http://localhost:5173">http://localhost:5173</a> for the frontend.</p>');
+});
+
 // Auth Endpoints
 app.get('/api/auth/google', (req, res) => {
+    if (!process.env.YOUTUBE_CLIENT_ID || process.env.YOUTUBE_CLIENT_ID === 'mock_id') {
+        return res.status(400).json({
+            error: 'Missing Credentials',
+            message: 'Please set your real YouTube Client ID and Secret in the backend .env file.'
+        });
+    }
     const url = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES,

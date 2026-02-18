@@ -18,9 +18,14 @@ function App() {
       .then(data => {
         if (data.url) {
           window.open(data.url, '_blank');
+        } else if (data.error) {
+          alert(`Configuration Error: ${data.message}`);
         }
       })
-      .catch(err => console.error('Error connecting channel:', err));
+      .catch(err => {
+        console.error('Error connecting channel:', err);
+        alert('Could not connect to backend. Make sure the server is running on port 5000.');
+      });
   };
 
   return (
