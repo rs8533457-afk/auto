@@ -3,13 +3,46 @@ const cors = require('cors');
 const chokidar = require('chokidar');
 const path = require('path');
 const fs = require('fs');
+const { google } = require('googleapis');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// OAuth2 Setup
+const oauth2Client = new google.auth.OAuth2(
+    process.env.YOUTUBE_CLIENT_ID,
+    process.env.YOUTUBE_CLIENT_SECRET,
+    process.env.YOUTUBE_REDIRECT_URI
+);
+
+const SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/youtube.readonly'];
+
 app.use(cors());
 app.use(express.json());
+
+// Auth Endpoints
+app.get('/api/auth/google', (req, res) => {
+    const url = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES,
+    });
+    res.json({ url });
+});
+
+app.get('/oauth2callback', async (req, res) => {
+    const { code } = req.query;
+    try {
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+        // In a real app, save tokens to DB
+        console.log('[Auth] Channel connected successfully');
+        res.send('<h1>Authentication successful! You can close this tab.</h1>');
+    } catch (error) {
+        console.error('[Auth] Error exchanging code for tokens:', error);
+        res.status(500).send('Authentication failed');
+    }
+});
 
 // Mock database for automation rules
 let automationRules = [

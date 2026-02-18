@@ -12,6 +12,17 @@ function App() {
       .catch(() => setBackendStatus('offline'));
   }, []);
 
+  const connectChannel = () => {
+    fetch('http://localhost:5000/api/auth/google')
+      .then(res => res.json())
+      .then(data => {
+        if (data.url) {
+          window.open(data.url, '_blank');
+        }
+      })
+      .catch(err => console.error('Error connecting channel:', err));
+  };
+
   return (
     <div className="layout">
       <aside className="sidebar glass-card">
@@ -61,7 +72,7 @@ function App() {
             <div className={`backend-badge ${backendStatus}`}>
               Backend: {backendStatus.toUpperCase()}
             </div>
-            <button className="btn-primary">Connect Channel</button>
+            <button className="btn-primary" onClick={connectChannel}>Connect Channel</button>
             <div className="user-profile">
               <div className="avatar">JD</div>
             </div>
