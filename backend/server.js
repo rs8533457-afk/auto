@@ -16,6 +16,8 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.YOUTUBE_REDIRECT_URI
 );
 
+console.log(`[Auth] Initialized with Redirect URI: ${process.env.YOUTUBE_REDIRECT_URI}`);
+
 const SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/youtube.readonly'];
 
 app.use(cors());
