@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [backendStatus, setBackendStatus] = useState('offline');
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/status')
+      .then(res => res.json())
+      .then(data => setBackendStatus(data.status))
+      .catch(() => setBackendStatus('offline'));
+  }, []);
 
   return (
     <div className="layout">
@@ -50,6 +58,9 @@ function App() {
             <h3>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h3>
           </div>
           <div className="header-right">
+            <div className={`backend-badge ${backendStatus}`}>
+              Backend: {backendStatus.toUpperCase()}
+            </div>
             <button className="btn-primary">Connect Channel</button>
             <div className="user-profile">
               <div className="avatar">JD</div>
